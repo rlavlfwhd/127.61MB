@@ -25,26 +25,27 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        
         float moveInput = Input.GetAxisRaw("Horizontal");
         rb.velocity = new Vector2(moveInput * moveSpeed, rb.velocity.y);
-
+        pAni.SetFloat("Walk", rb.velocity.sqrMagnitude > 0 ? 1.0f : 0.0f);
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, 0.1f, groundLayer);
 
         if (isGiant)
         {
             if (moveInput < 0)
-                transform.localScale = new Vector3(2f, 2f, 1f);
+                transform.localScale = new Vector3(-2f, 2f, 1f);
 
             if (moveInput > 0)
-                transform.localScale = new Vector3(-2f, 2f, 1f);
+                transform.localScale = new Vector3(2f, 2f, 1f);
         }
         else
         {
             if (moveInput < 0)
-                transform.localScale = new Vector3(1f, 1f, 1f);
+                transform.localScale = new Vector3(-1f, 1f, 1f);
 
             if (moveInput > 0)
-                transform.localScale = new Vector3(-1f, 1f, 1f);
+                transform.localScale = new Vector3(1f, 1f, 1f);
         }
 
 
@@ -53,6 +54,7 @@ public class PlayerController : MonoBehaviour
             rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
             pAni.SetTrigger("JumpAction");
         }
+
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
