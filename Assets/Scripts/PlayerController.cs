@@ -14,7 +14,9 @@ public class PlayerController : MonoBehaviour
     private Animator pAni;
     private bool isGrounded;
 
-    private bool isGiant = false;
+    private bool isInvincibility = false;
+    private bool isHaste = false;
+    private bool isJumpUp = false;
 
     private void Awake()
     {
@@ -31,23 +33,11 @@ public class PlayerController : MonoBehaviour
         pAni.SetFloat("Walk", rb.velocity.sqrMagnitude > 0 ? 1.0f : 0.0f);
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, 0.1f, groundLayer);
 
-        if (isGiant)
-        {
-            if (moveInput < 0)
-                transform.localScale = new Vector3(-2f, 2f, 1f);
+        if (moveInput < 0)
+            transform.localScale = new Vector3(-0.7f, 0.7f, 1f);
 
-            if (moveInput > 0)
-                transform.localScale = new Vector3(2f, 2f, 1f);
-        }
-        else
-        {
-            if (moveInput < 0)
-                transform.localScale = new Vector3(-1f, 1f, 1f);
-
-            if (moveInput > 0)
-                transform.localScale = new Vector3(1f, 1f, 1f);
-        }
-
+        if (moveInput > 0)
+            transform.localScale = new Vector3(0.7f, 0.7f, 1f);
 
         if (isGrounded && Input.GetKeyDown(KeyCode.Space))
         {
@@ -55,13 +45,31 @@ public class PlayerController : MonoBehaviour
             pAni.SetTrigger("JumpAction");
         }
 
+        if (isHaste)
+        {
+            moveSpeed = 4;
+        }
+
+        if(isJumpUp)
+        {
+            jumpForce = 13f;
+        }
+        else
+        {
+            jumpForce = 5f;
+        }
+
+
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if(collision.CompareTag("Respawn"))
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            if (!isInvincibility)
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            }
         }
 
         if (collision.CompareTag("Finish"))
@@ -71,14 +79,40 @@ public class PlayerController : MonoBehaviour
 
         if (collision.CompareTag("Enemy"))
         {
-            if (isGiant) Destroy(collision.gameObject);
-            else SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            if (!isInvincibility)
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            }
         }
 
         if(collision.CompareTag("Item"))
         {
-            isGiant = true;
             Destroy(collision.gameObject);
+            StartCoroutine(InvincibilityCoroutine());
         }
+
+        if (collision.CompareTag("Item2"))
+        {
+            Destroy(collision.gameObject);            
+        }
+
+        if (collision.CompareTag("Item3"))
+        {
+            Destroy(collision.gameObject);
+            StartCoroutine(JumpUpCoroutine());
+        }
+    }
+
+    private IEnumerator InvincibilityCoroutine()
+    {
+        isInvincibility = true;
+        yield return new WaitForSeconds(3f);
+        isInvincibility = false;
+    }
+    private IEnumerator JumpUpCoroutine()
+    {
+        isJumpUp = true;
+        yield return new WaitForSeconds(4f);
+        isJumpUp = false;
     }
 }

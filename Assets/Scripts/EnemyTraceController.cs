@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnemyTraceController : MonoBehaviour
 {
-    public float moveSpeed = 5f;
+    public float moveSpeed = 1f;
     public float raycastDistance = 2f;
     public float traceDistance = 2f;
 
@@ -23,8 +23,7 @@ public class EnemyTraceController : MonoBehaviour
 
         Vector2 directionNormalized = direction.normalized;
 
-        RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, directionNormalized, raycastDistance);
-        Debug.DrawRay(transform.position, directionNormalized * raycastDistance, Color.red);
+        RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, directionNormalized, raycastDistance);        
 
         foreach(RaycastHit2D rHit in hits)
         {
